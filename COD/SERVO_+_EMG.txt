@@ -1,0 +1,46 @@
+/* 
+ * Control SERVO by EMG
+ *   Cada pico del EMG abre la mano si estaba cerrada o la cierra si estaba abierta
+ *   (The EMG peaks open or close the hand)
+ */
+
+#include <Servo.h>
+
+int emg_pin=0; //Analog 0
+int valor_emg=0;
+int led = 13;
+int servo_pin = 11;
+Servo servo;
+int estado=0;
+
+void setup()
+{
+  Serial.begin(9600);
+  pinMode(led, OUTPUT);  
+  servo.attach(servo_pin); 
+  
+}
+
+void loop()
+{
+  valor_emg=0;
+  valor_emg=analogRead(emg_pin);
+  Serial.println(valor_emg);
+  if (valor_emg>100 && estado==0)
+  {
+	digitalWrite(led, HIGH);
+    servo.write(20);
+    estado=1;
+    delay(1000);
+  }
+  else if (valor_emg>100 && estado==1)
+  {
+    digitalWrite(led, LOW);
+    servo.write(160);
+    estado=0;
+    delay(1000);
+  }
+  Serial.println(valor_emg);
+  delay(50);
+}
+
