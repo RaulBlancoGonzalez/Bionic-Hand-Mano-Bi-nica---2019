@@ -1,0 +1,63 @@
+/* 
+ * Control SERVO
+ *   "a" en la consola para abrir la mano (open hand)
+ *   "c" en la consola para cerrar la mano (close hand)
+ */
+ 
+#include <Servo.h>
+
+int servo_pin = 11;
+boolean hand_opened = true;
+
+int opened_angle = 45, closed_angle = 0;
+Servo servo;
+int servo_timer = 0;
+int timer_threshold = 500;
+
+void setup()
+{
+  Serial.begin(9600);
+  servo.attach(servo_pin); 
+  servo.write(opened_angle);
+}
+
+void loop()
+{
+  if (Serial.available() > 0) {
+    int inByte = Serial.read();
+    switch (inByte) {
+    case 'a': 
+      if(!hand_opened)  {
+		for(int pos = closed_angle * 2; pos < opened_angle * 2; pos+=2) 
+		{	          
+			servo.write(pos);
+			delay(2);
+		}
+		hand_opened=true;
+      }
+      servo_timer = 0;
+      break;
+    case 'c':
+	  if(hand_opened){    
+		for(int pos = opened_angle * 2; pos > closed_angle * 2; pos-=2)
+		{           
+			servo.write(pos);
+			delay(2);
+		}
+      hand_opened=false;
+	  }
+      servo_timer = 0;
+      break;
+    default:
+      delay(10);
+    }
+
+	if (servo_timer < timer_threshold)
+		servo_timer++;
+	delay(1);
+  }
+}
+
+
+
+
